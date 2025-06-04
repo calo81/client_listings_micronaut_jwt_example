@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 
 @Singleton
-@Filter("/v1/client/**")
+@Filter("/v1/clientxx/**")
 public class ClientAuthorisationFilter implements HttpServerFilter {
 
     private final TokenReader<HttpRequest<?>> tokenReader;

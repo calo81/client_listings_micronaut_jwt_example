@@ -1,27 +1,23 @@
 package com.caciquetech.datashare;
 
+import com.caciquetech.datashare.security.SecuredJwtSubjectMatchesClientId;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.MediaType;
+import io.micronaut.security.annotation.Secured;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller("/v1/client/{client_id}")
+@Secured( "isAuthenticated()")
+@SecuredJwtSubjectMatchesClientId(clientIdPathIndex = 3)
 public class ClientController {
 
-    @Get(uri="/shares", produces=MediaType.TEXT_HTML)
-    public String getClientShares(@PathVariable String client_id) {
-        List<String> shares = List.of("Share A", "Share B", "Share C");
+    @Get(uri="/shares", produces=MediaType.APPLICATION_JSON)
 
-        StringBuilder html = new StringBuilder();
-        html.append("<html><body>");
-        html.append("<h1>Shares for client: ").append(client_id).append("</h1>");
-        html.append("<ul>");
-        for (String share : shares) {
-            html.append("<li>").append(share).append("</li>");
-        }
-        html.append("</ul>");
-        html.append("</body></html>");
+    public Map<String, Object> getClientShares(@PathVariable String client_id) {
+        List<Map<String, Object>> shares = List.of(Map.of("name", "Share A"), Map.of("name", "Share C"));
 
-        return html.toString();
+        return Map.of( "shares", shares);
     }
 }
