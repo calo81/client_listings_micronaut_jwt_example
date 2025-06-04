@@ -68,12 +68,6 @@ public class SubjectMatchesClientSecurityRule extends AbstractSecurityRule<HttpR
             MethodBasedRouteMatch<?, ?> methodRoute = ((MethodBasedRouteMatch) routeMatch);
             AnnotationValue<SecuredJwtSubjectMatchesClientId> securedAnnotation = methodRoute.getAnnotation(SecuredJwtSubjectMatchesClientId.class);
             if (securedAnnotation != null) {
-                if (securedAnnotation instanceof EvaluatedAnnotationValue<SecuredJwtSubjectMatchesClientId>) {
-                    boolean[] arr = securedAnnotation.booleanValues();
-                    if (arr.length > 0) {
-                        return Mono.just(arr[0] ? SecurityRuleResult.ALLOWED : SecurityRuleResult.REJECTED);
-                    }
-                }
                 OptionalInt optionalValue = methodRoute.intValue(SecuredJwtSubjectMatchesClientId.class, "clientIdPathIndex");
                 if (optionalValue.isPresent()) {
                     String[] segments = request.getPath().split("/");
