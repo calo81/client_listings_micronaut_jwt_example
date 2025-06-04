@@ -1,4 +1,4 @@
-package com.nwboxed.demo;
+package com.caciquetech.datashare.demo;
 
 import io.micronaut.runtime.EmbeddedApplication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;

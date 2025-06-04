@@ -1,4 +1,4 @@
-package com.nwboxed;
+package com.caciquetech.datashare;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.*;
@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 
 @Singleton
-@Filter("/client/**")
+@Filter("/v1/client/**")
 public class ClientAuthorisationFilter implements HttpServerFilter {
 
     private final TokenReader<HttpRequest<?>> tokenReader;
@@ -32,10 +32,10 @@ public class ClientAuthorisationFilter implements HttpServerFilter {
     public Publisher<MutableHttpResponse<?>> doFilter(@NonNull HttpRequest<?> request,
                                                       @NonNull ServerFilterChain chain) {
         String[] segments = request.getPath().split("/");
-        if (segments.length < 3) {
+        if (segments.length < 4) {
             return Mono.just(HttpResponse.badRequest().body("Missing client_id in path"));
         }
-        String clientIdInPath = segments[2];
+        String clientIdInPath = segments[3];
 
         Optional<String> tokenOpt = tokenReader.findToken(request);
 

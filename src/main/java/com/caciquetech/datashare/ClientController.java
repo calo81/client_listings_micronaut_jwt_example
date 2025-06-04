@@ -1,14 +1,14 @@
-package com.nwboxed;
+package com.caciquetech.datashare;
 
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.MediaType;
 
 import java.util.List;
 
-@Controller("/client")
+@Controller("/v1/client/{client_id}")
 public class ClientController {
 
-    @Get(uri="/{client_id}/shares", produces=MediaType.TEXT_HTML)
+    @Get(uri="/shares", produces=MediaType.TEXT_HTML)
     public String getClientShares(@PathVariable String client_id) {
         List<String> shares = List.of("Share A", "Share B", "Share C");
 
