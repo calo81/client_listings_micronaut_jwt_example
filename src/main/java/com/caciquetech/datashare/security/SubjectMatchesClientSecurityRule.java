@@ -10,10 +10,7 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.inject.annotation.EvaluatedAnnotationValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
-import io.micronaut.security.rules.AbstractSecurityRule;
-import io.micronaut.security.rules.ConfigurationInterceptUrlMapRule;
-import io.micronaut.security.rules.SecurityRule;
-import io.micronaut.security.rules.SecurityRuleResult;
+import io.micronaut.security.rules.*;
 import io.micronaut.security.token.RolesFinder;
 import io.micronaut.security.token.reader.TokenReader;
 import io.micronaut.security.token.validator.TokenValidator;
@@ -36,12 +33,14 @@ public class SubjectMatchesClientSecurityRule extends AbstractSecurityRule<HttpR
     /**
      * The order of the rule.
      */
-    public static final Integer ORDER = ConfigurationInterceptUrlMapRule.ORDER - 100;
+    public static final Integer ORDER = ConfigurationInterceptUrlMapRule.ORDER - 2000;
 
     @Inject
     private TokenReader<HttpRequest<?>> tokenReader;
     @Inject
     private TokenValidator<HttpRequest<?>> tokenValidator;
+    @Inject
+    private SecuredAnnotationRule securedAnnotationRule;
 
     /**
      * @param rolesFinder Roles Parser
@@ -63,6 +62,18 @@ public class SubjectMatchesClientSecurityRule extends AbstractSecurityRule<HttpR
 
     @Override
     public Publisher<SecurityRuleResult> check(HttpRequest<?> request, @Nullable Authentication authentication) {
+        return Mono.from(securedAnnotationRule.check(request, authentication)).flatMap(result -> {
+            if (result == SecurityRuleResult.REJECTED) {
+                return Mono.just(SecurityRuleResult.REJECTED);
+            } else {
+                return Mono.from(checkClientId(request, authentication));
+            }
+        });
+    }
+
+    private Publisher<SecurityRuleResult> checkClientId(HttpRequest<?> request, @Nullable Authentication authentication) {
+
+
         RouteMatch<?> routeMatch = request.getAttribute(HttpAttributes.ROUTE_MATCH, RouteMatch.class).orElse(null);
         if (routeMatch instanceof MethodBasedRouteMatch) {
             MethodBasedRouteMatch<?, ?> methodRoute = ((MethodBasedRouteMatch) routeMatch);
